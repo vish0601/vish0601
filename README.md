@@ -1,14 +1,36 @@
-x = 5
-y = 10
+from github import Github
 
-# To take inputs from the user
-#x = input('Enter value of x: ')
-#y = input('Enter value of y: ')
+# GitHub credentials
+username = "your_username"
+token = "your_token"
+repository_name = "your_repository_name"
 
-# create a temporary variable and swap the values
-temp = x
-x = y
-y = temp
+# Connect to the repository
+g = Github(username, token)
+repo = g.get_user().get_repo(repository_name)
 
-print('The value of x after swapping: {}'.format(x))
-print('The value of y after swapping: {}'.format(y))
+# To-Do list file
+file_path = "todo.md"
+
+# Tasks to add
+tasks = ["Task 1", "Task 2", "Task 3"]
+
+# Fetch existing content
+contents = repo.get_contents(file_path)
+existing_content = contents.decoded_content.decode("utf-8")
+
+# Update the to-do list
+for task in tasks:
+    task_line = f"- [ ] {task}\n"
+    if task_line not in existing_content:
+        existing_content += task_line
+
+# Commit changes
+repo.update_file(
+    path=file_path,
+    message="Update to-do list",
+    content=existing_content,
+    sha=contents.sha,
+)
+
+print("To-do list updated successfully.")
